@@ -1,9 +1,7 @@
 "use client";
-// src/components/ChatBox.tsx
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import Message from './Message';
-
 const ChatBox = () => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');

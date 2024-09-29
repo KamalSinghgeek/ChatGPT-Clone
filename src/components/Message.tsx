@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
-import './Message.css'; // Add CSS for styling
 
 const Message = ({ message, messages, onAddBranch, onDeleteMessage, onEditMessage }) => {
   const [branchContent, setBranchContent] = useState('');
@@ -107,15 +106,14 @@ const Message = ({ message, messages, onAddBranch, onDeleteMessage, onEditMessag
 
       {showHistory && (
         <div className="history-container">
-        <h4>Message History:</h4>
-        {history.map((version) => (
-          <div key={version.id} className="history-item">
-            <p>Version {version.version}: {version.content}</p>
-            <small>Created at: {new Date(version.created_at).toLocaleString()}</small>
-          </div>
-        ))}
-      </div>
-      
+          <h4>Message History:</h4>
+          {history.map((version) => (
+            <div key={version.id} className="history-item">
+              <p>Version {version.version}: {version.content}</p>
+              <small>{new Date(version.created_at).toLocaleString()}</small>
+            </div>
+          ))}
+        </div>
       )}
 
       {childMessages.map((child) => (
