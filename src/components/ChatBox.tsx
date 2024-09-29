@@ -64,38 +64,34 @@ const ChatBox = () => {
 
   const addBranch = async (parentId, content) => {
     try {
-      // Fetch the latest version for the given parent message
       const { data: versions, error: fetchError } = await supabase
         .from('message_versions')
         .select('version')
         .eq('message_id', parentId)
         .order('version', { ascending: false })
         .limit(1); // Get the latest version
-  
+
       if (fetchError) {
         console.error('Error fetching versions:', fetchError.message);
         return;
       }
-  
-      // Determine the next version number
+
       const latestVersion = versions.length > 0 ? versions[0].version : 0;
       const newVersion = latestVersion + 1;
-  
-      // Insert the new branch
+
       const { error: insertError } = await supabase
         .from('messages')
         .insert([{ content, parent_message_id: parentId }]);
-  
+
       if (insertError) {
         console.error('Error adding branch:', insertError.message);
         return;
       }
-  
-      // Insert the new version with incremented version number
+
       const { error: versionError } = await supabase
         .from('message_versions')
         .insert([{ message_id: parentId, content, version: newVersion }]);
-  
+
       if (versionError) {
         console.error('Error adding to message history:', versionError.message);
       } else {
@@ -105,11 +101,9 @@ const ChatBox = () => {
       console.error('An unexpected error occurred:', error.message);
     }
   };
-  
 
   const deleteMessage = async (id) => {
     try {
-      // First, delete all associated message versions
       const { error: versionError } = await supabase
         .from('message_versions')
         .delete()
@@ -120,7 +114,6 @@ const ChatBox = () => {
         return;
       }
 
-      // Then delete the message itself
       const { error: messageError } = await supabase
         .from('messages')
         .delete()
@@ -129,9 +122,51 @@ const ChatBox = () => {
       if (messageError) {
         console.error('Error deleting message:', messageError.message);
       } else {
-        // Update the success message state when delete is successful
         setSuccessMessage('Message and associated versions deleted successfully');
         console.log('Message and associated versions deleted successfully.');
+      }
+    } catch (error) {
+      console.error('An unexpected error occurred:', error.message);
+    }
+  };
+
+  // New function to edit a message
+  const editMessage = async (id, newContent) => {
+    try {
+      const { data: existingMessage, error: fetchError } = await supabase
+        .from('messages')
+        .select('*')
+        .eq('id', id);
+
+      if (fetchError) {
+        console.error('Error fetching existing message:', fetchError.message);
+        return;
+      }
+
+      if (existingMessage.length > 0) {
+        const currentContent = existingMessage[0].content;
+        const currentVersion = existingMessage[0].version || 1;
+
+        // Insert the current message as a version before updating
+        const { error: versionError } = await supabase
+          .from('message_versions')
+          .insert([{ message_id: id, content: currentContent, version: currentVersion }]);
+
+        if (versionError) {
+          console.error('Error inserting message version:', versionError.message);
+        }
+
+        // Update the original message content
+        const { error: updateError } = await supabase
+          .from('messages')
+          .update({ content: newContent, version: currentVersion + 1 })
+          .eq('id', id);
+
+        if (updateError) {
+          console.error('Error updating message:', updateError.message);
+        } else {
+          console.log('Message updated successfully');
+        }
       }
     } catch (error) {
       console.error('An unexpected error occurred:', error.message);
@@ -141,13 +176,11 @@ const ChatBox = () => {
   return (
     <div>
       <div>
-        {/* Show success message */}
         {successMessage && (
           <div style={{ color: 'green', marginBottom: '10px' }}>
             {successMessage}
           </div>
         )}
-        {/* Messages */}
         {messages
           .filter((msg) => msg.parent_message_id === null)
           .map((message) => (
@@ -157,6 +190,7 @@ const ChatBox = () => {
               messages={messages}
               onAddBranch={addBranch}
               onDeleteMessage={deleteMessage} // Pass delete function
+              onEditMessage={editMessage} // Pass edit function
             />
           ))}
       </div>

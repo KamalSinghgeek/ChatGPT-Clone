@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import './Message.css'; // Add CSS for styling
 
-const Message = ({ message, messages, onAddBranch, onDeleteMessage }) => {
+const Message = ({ message, messages, onAddBranch, onDeleteMessage, onEditMessage }) => {
   const [branchContent, setBranchContent] = useState('');
   const [isBranching, setIsBranching] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
   const [history, setHistory] = useState([]);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editContent, setEditContent] = useState(message.content); // Store edit content
 
   const childMessages = messages.filter(
     (msg) => msg.parent_message_id === message.id
@@ -41,18 +43,50 @@ const Message = ({ message, messages, onAddBranch, onDeleteMessage }) => {
     }
   };
 
+  // Function to handle editing
+  const handleEdit = () => {
+    setIsEditing(true);
+  };
+
+  const handleSaveEdit = () => {
+    onEditMessage(message.id, editContent);
+    setIsEditing(false);
+  };
+
   return (
     <div className="message-box">
       <div className="message-header">
-        <p>{message.content}</p>
+        {isEditing ? (
+          <div>
+            <input
+              type="text"
+              value={editContent}
+              onChange={(e) => setEditContent(e.target.value)}
+              placeholder="Edit message"
+            />
+            <button onClick={handleSaveEdit}>Save</button>
+            <button onClick={() => setIsEditing(false)}>Cancel</button>
+          </div>
+        ) : (
+          <p>{message.content}</p>
+        )}
         <div className="message-actions">
-          <button onClick={() => setIsBranching(!isBranching)}>
+          {isEditing ? (
+            <button onClick={() => setIsEditing(false)}>Cancel</button>
+          ) : (
+            <>
+               <button onClick={() => setIsBranching(!isBranching)}>
             {isBranching ? 'Cancel' : 'Add Branch'}
           </button>
           <button onClick={handleViewHistory}>
             {showHistory ? 'Hide History' : 'View History'}
           </button>
-          <button onClick={() => onDeleteMessage(message.id)}>Delete</button>
+              <button onClick={handleEdit}>Edit</button>
+
+              
+              <button onClick={() => onDeleteMessage(message.id)}>Delete</button>
+            </>
+          )}
         </div>
       </div>
 
@@ -90,6 +124,7 @@ const Message = ({ message, messages, onAddBranch, onDeleteMessage }) => {
           messages={messages}
           onAddBranch={onAddBranch}
           onDeleteMessage={onDeleteMessage}
+          onEditMessage={onEditMessage} // Pass edit function
         />
       ))}
     </div>
