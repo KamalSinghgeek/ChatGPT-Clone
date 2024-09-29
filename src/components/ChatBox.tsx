@@ -7,6 +7,7 @@ import Message from './Message';
 const ChatBox = () => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState(''); // State for success message
 
   // Fetch messages on mount and on updates
   useEffect(() => {
@@ -36,6 +37,17 @@ const ChatBox = () => {
     };
   }, []);
 
+  // Clear success message after 3 seconds
+  useEffect(() => {
+    if (successMessage) {
+      const timer = setTimeout(() => {
+        setSuccessMessage('');
+      }, 3000); // Clear after 3 seconds
+
+      return () => clearTimeout(timer); // Cleanup the timer
+    }
+  }, [successMessage]);
+
   const sendMessage = async () => {
     if (newMessage.trim() === '') return;
 
@@ -51,29 +63,91 @@ const ChatBox = () => {
   };
 
   const addBranch = async (parentId, content) => {
-    const { error } = await supabase
-      .from('messages')
-      .insert([{ content, parent_message_id: parentId }]);
-
-    if (error) {
-      console.error('Error adding branch:', error.message);
+    try {
+      // Fetch the latest version for the given parent message
+      const { data: versions, error: fetchError } = await supabase
+        .from('message_versions')
+        .select('version')
+        .eq('message_id', parentId)
+        .order('version', { ascending: false })
+        .limit(1); // Get the latest version
+  
+      if (fetchError) {
+        console.error('Error fetching versions:', fetchError.message);
+        return;
+      }
+  
+      // Determine the next version number
+      const latestVersion = versions.length > 0 ? versions[0].version : 0;
+      const newVersion = latestVersion + 1;
+  
+      // Insert the new branch
+      const { error: insertError } = await supabase
+        .from('messages')
+        .insert([{ content, parent_message_id: parentId }]);
+  
+      if (insertError) {
+        console.error('Error adding branch:', insertError.message);
+        return;
+      }
+  
+      // Insert the new version with incremented version number
+      const { error: versionError } = await supabase
+        .from('message_versions')
+        .insert([{ message_id: parentId, content, version: newVersion }]);
+  
+      if (versionError) {
+        console.error('Error adding to message history:', versionError.message);
+      } else {
+        console.log(`New version added: Version ${newVersion}`);
+      }
+    } catch (error) {
+      console.error('An unexpected error occurred:', error.message);
     }
   };
+  
 
   const deleteMessage = async (id) => {
-    const { error } = await supabase
-      .from('messages')
-      .delete()
-      .eq('id', id);
+    try {
+      // First, delete all associated message versions
+      const { error: versionError } = await supabase
+        .from('message_versions')
+        .delete()
+        .eq('message_id', id);
 
-    if (error) {
-      console.error('Error deleting message:', error.message);
+      if (versionError) {
+        console.error('Error deleting message versions:', versionError.message);
+        return;
+      }
+
+      // Then delete the message itself
+      const { error: messageError } = await supabase
+        .from('messages')
+        .delete()
+        .eq('id', id);
+
+      if (messageError) {
+        console.error('Error deleting message:', messageError.message);
+      } else {
+        // Update the success message state when delete is successful
+        setSuccessMessage('Message and associated versions deleted successfully');
+        console.log('Message and associated versions deleted successfully.');
+      }
+    } catch (error) {
+      console.error('An unexpected error occurred:', error.message);
     }
   };
 
   return (
     <div>
       <div>
+        {/* Show success message */}
+        {successMessage && (
+          <div style={{ color: 'green', marginBottom: '10px' }}>
+            {successMessage}
+          </div>
+        )}
+        {/* Messages */}
         {messages
           .filter((msg) => msg.parent_message_id === null)
           .map((message) => (

@@ -1,13 +1,37 @@
-// src/components/Message.tsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { supabase } from '../lib/supabase';
+import './Message.css'; // Add CSS for styling
 
 const Message = ({ message, messages, onAddBranch, onDeleteMessage }) => {
   const [branchContent, setBranchContent] = useState('');
   const [isBranching, setIsBranching] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
+  const [history, setHistory] = useState([]);
 
   const childMessages = messages.filter(
     (msg) => msg.parent_message_id === message.id
   );
+
+  const fetchHistory = async () => {
+    const { data, error } = await supabase
+      .from('message_versions')
+      .select('*')
+      .eq('message_id', message.id)
+      .order('version', { ascending: false });
+
+    if (error) {
+      console.error('Error fetching message history:', error.message);
+    } else {
+      setHistory(data);
+    }
+  };
+
+  const handleViewHistory = () => {
+    setShowHistory(!showHistory);
+    if (!showHistory) {
+      fetchHistory();
+    }
+  };
 
   const handleAddBranch = () => {
     if (branchContent.trim() !== '') {
@@ -17,27 +41,45 @@ const Message = ({ message, messages, onAddBranch, onDeleteMessage }) => {
     }
   };
 
-  const handleDelete = () => {
-    onDeleteMessage(message.id); // Call the delete function from props
-  };
-
   return (
-    <div style={{ marginLeft: '20px', marginTop: '10px', border: '1px solid gray', padding: '10px' }}>
-      <p>{message.content}</p>
-      <button onClick={() => setIsBranching(!isBranching)}>
-        {isBranching ? 'Cancel' : 'Add Branch'}
-      </button>
-      <button onClick={handleDelete}>Delete</button> {/* Delete button */}
+    <div className="message-box">
+      <div className="message-header">
+        <p>{message.content}</p>
+        <div className="message-actions">
+          <button onClick={() => setIsBranching(!isBranching)}>
+            {isBranching ? 'Cancel' : 'Add Branch'}
+          </button>
+          <button onClick={handleViewHistory}>
+            {showHistory ? 'Hide History' : 'View History'}
+          </button>
+          <button onClick={() => onDeleteMessage(message.id)}>Delete</button>
+        </div>
+      </div>
 
       {isBranching && (
-        <div>
+        <div className="branch-input-container">
           <input
             type="text"
+            className="branch-input"
             value={branchContent}
             onChange={(e) => setBranchContent(e.target.value)}
             placeholder="Branch content"
           />
-          <button onClick={handleAddBranch}>Save</button>
+          <button className="save-branch-button" onClick={handleAddBranch}>
+            Save
+          </button>
+        </div>
+      )}
+
+      {showHistory && (
+        <div className="history-container">
+          <h4>Message History:</h4>
+          {history.map((version) => (
+            <div key={version.id} className="history-item">
+              <p>Version {version.version}: {version.content}</p>
+              <small>{new Date(version.created_at).toLocaleString()}</small>
+            </div>
+          ))}
         </div>
       )}
 
@@ -47,7 +89,7 @@ const Message = ({ message, messages, onAddBranch, onDeleteMessage }) => {
           message={child}
           messages={messages}
           onAddBranch={onAddBranch}
-          onDeleteMessage={onDeleteMessage} // Pass delete function
+          onDeleteMessage={onDeleteMessage}
         />
       ))}
     </div>
