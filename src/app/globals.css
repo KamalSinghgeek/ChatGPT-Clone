@@ -1,0 +1,145 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+
+.message-box {
+  background-color: #dad7d7;
+  border: 2px solid #f1b2b2;
+  border-radius: 8px;
+  padding: 15px;
+  margin: 20px 0;
+  box-shadow: 0 2px 8px rgba(31, 3, 3, 0.05);
+}
+
+h1, .title {
+  text-align: center;
+}
+
+.title {
+  font-family: 'Arial', sans-serif;
+  font-size: 3rem;
+  font-weight: bold;
+  color: #c952d3b5;
+  background-color: #e49292;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  margin: 20px auto;
+  width: fit-content;
+}
+
+.message-header {
+  justify-content: space-between;
+  align-items: center;
+}
+
+.message-actions {
+  display: flex;
+  gap: 8px;
+}
+
+button {
+  background-color: #a520b1bc;
+  color: white;
+  border: none;
+  padding: 4px 5px;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #a9bacb;
+}
+
+.branch-input-container, .history-container {
+  margin-top: 10px;
+}
+
+.branch-input {
+  width: 40%;
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid #e0c5c5;
+}
+
+.save-branch-button {
+  margin-top: 5px;
+  background-color: #4e28a7cf;
+  color: rgb(228, 241, 243);
+}
+
+.history-item {
+  margin-top: 5px;
+  padding: 10px;
+  background-color: #cec8bcc6;
+  border-radius: 3px;
+}
+
+/* Custom Textarea Styling */
+.custom-textarea {
+  width: 40%;
+  max-width: 300px;
+  height: 50px;
+  padding: 15px;
+  font-family: 'Arial', sans-serif;
+  font-size: 1rem;
+  border: 2px solid #ee8c8c;
+  border-radius: 8px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  outline: none;
+  resize: vertical;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.custom-textarea:focus {
+  border-color: #c4ceda;
+  box-shadow: 5px 5px 5px rgba(0, 123, 255, 0.5);
+}
+
+/* Main Button Styling */
+.main-button {
+  background-color: #10a37f;
+  color: white;
+  font-family: 'Arial', sans-serif;
+  font-size: 1rem;
+  font-weight: bold;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.main-button:hover {
+  background-color: #0e8b6b;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.main-button:active {
+  background-color: #0c7359;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.main-button:focus {
+  outline: none;
+  box-shadow: 0 0 6px rgba(16, 163, 127, 0.5);
+}
+
+/* Flex Container for Textarea and Button */
+.input-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.custom-textarea {
+  flex-grow: 1;
+  width: 30%;
+  max-width: none;
+  height: 50px;
+}
