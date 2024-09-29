@@ -194,11 +194,14 @@ const ChatBox = () => {
             />
           ))}
       </div>
-      <textarea
-        value={newMessage}
-        onChange={(e) => setNewMessage(e.target.value)}
-      />
-      <button onClick={sendMessage}>Send</button>
+      <div className="input-container">
+  <textarea
+    className="custom-textarea"
+    value={newMessage}
+    onChange={(e) => setNewMessage(e.target.value)}
+  />
+  <button className="main-button" onClick={sendMessage}>Send</button>
+</div>
     </div>
   );
 };
