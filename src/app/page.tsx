@@ -1,4 +1,3 @@
-// src/app/page.tsx
 import ChatBox from '../components/ChatBox';
 
 const Home = () => {

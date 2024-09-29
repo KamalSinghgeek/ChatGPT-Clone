@@ -7,7 +7,7 @@ const Message = ({ message, messages, onAddBranch, onDeleteMessage, onEditMessag
   const [showHistory, setShowHistory] = useState(false);
   const [history, setHistory] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
-  const [editContent, setEditContent] = useState(message.content); // Store edit content
+  const [editContent, setEditContent] = useState(message.content);
 
   const childMessages = messages.filter(
     (msg) => msg.parent_message_id === message.id
@@ -123,7 +123,7 @@ const Message = ({ message, messages, onAddBranch, onDeleteMessage, onEditMessag
           messages={messages}
           onAddBranch={onAddBranch}
           onDeleteMessage={onDeleteMessage}
-          onEditMessage={onEditMessage} // Pass edit function
+          onEditMessage={onEditMessage} 
         />
       ))}
     </div>

@@ -17,14 +17,15 @@ h1, .title {
   text-align: center;
 }
 
+
 .title {
   font-family: 'Arial', sans-serif;
-  font-size: 3rem;
+  font-size: 4rem;
   font-weight: bold;
   color: #c952d3b5;
-  background-color: #e49292;
-  padding: 20px;
-  border-radius: 10px;
+  background-color: #e492929a;
+  padding: 50px;
+  border-radius: 8px;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
   margin: 20px auto;
   width: fit-content;
@@ -44,7 +45,7 @@ button {
   background-color: #a520b1bc;
   color: white;
   border: none;
-  padding: 4px 5px;
+  padding: 1px 3px;
   border-radius: 3px;
   cursor: pointer;
 }
@@ -80,7 +81,7 @@ button:hover {
 /* Custom Textarea Styling */
 .custom-textarea {
   width: 40%;
-  max-width: 300px;
+  max-width: 30px;
   height: 50px;
   padding: 15px;
   font-family: 'Arial', sans-serif;
@@ -134,7 +135,7 @@ button:hover {
   flex-direction: row;
   align-items: center;
   gap: 10px;
-  margin-top: 20px;
+  margin-top: 30px;
 }
 
 .custom-textarea {
