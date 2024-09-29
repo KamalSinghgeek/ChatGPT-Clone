@@ -64,14 +64,14 @@ const Message = ({ message, messages, onAddBranch, onDeleteMessage, onEditMessag
               placeholder="Edit message"
             />
             <button onClick={handleSaveEdit}>Save</button>
-            <button onClick={() => setIsEditing(false)}>Cancel</button>
+            <button onClick={() => setIsEditing(false)}> Cancel</button>
           </div>
         ) : (
           <p>{message.content}</p>
         )}
         <div className="message-actions">
           {isEditing ? (
-            <button onClick={() => setIsEditing(false)}>Cancel</button>
+            <button onClick={() => setIsEditing(false)}></button>
           ) : (
             <>
                <button onClick={() => setIsBranching(!isBranching)}>

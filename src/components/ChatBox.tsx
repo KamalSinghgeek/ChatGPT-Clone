@@ -187,8 +187,8 @@ const ChatBox = () => {
               message={message}
               messages={messages}
               onAddBranch={addBranch}
-              onDeleteMessage={deleteMessage} // Pass delete function
-              onEditMessage={editMessage} // Pass edit function
+              onDeleteMessage={deleteMessage} 
+              onEditMessage={editMessage} 
             />
           ))}
       </div>
